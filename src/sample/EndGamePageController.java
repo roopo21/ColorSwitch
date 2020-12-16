@@ -38,20 +38,69 @@ public class EndGamePageController implements Initializable {
     @FXML
     Button restart;
     @FXML
-    Button Close;
+    Button back;
+    @FXML
+    Button revivalButton;
     @FXML
     AnchorPane EndgameRoot;
     @FXML
     Text finalScore,endGame;
     //set endGame text to Game ended
     @FXML
-    Text reviveText,revivepossible;
+    Text reviveText,topscore;
     //set revivepossible to true or false depending on the stars.
+    public int Score,TopScore;
+    @FXML
+    Text ScoreText,TopScoreText;
+
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        finalScore.setText("SCORE");//score to be added here
+        endGame.setText("GAME OVER");
+        reviveText.setText("5 Keys needed to revive");
+        topscore.setText("TOP SCORE");
+        //finalScore.setText(0+" ");
+        try {
+            endGame.setFont(Font.loadFont(new FileInputStream("src/sample/Fonts/BT.otf"),35));
+            finalScore.setFont(Font.loadFont(new FileInputStream("src/sample/Fonts/BT.otf"),40));
+            reviveText.setFont(Font.loadFont(new FileInputStream("src/sample/Fonts/BT.otf"),20));
+            topscore.setFont(Font.loadFont(new FileInputStream("src/sample/Fonts/BT.otf"),40));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
 
+
+
+    }
+    public void checkRevival()
+    {
+
+    }
+
+    public void doRestart()
+    {
+
+    }
+
+    public void backToMain()
+    {
+
+    }
+
+    private void setTopScore()
+    {
+
+    }
+
+    public void setScore(int currScore) {
+        Score=currScore;
+        if(Score>TopScore)
+        {
+            TopScore=Score;
+        }
     }
 }

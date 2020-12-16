@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static sample.GamePlayPageController.currScore;
+
 public class ball {
     double y;
     double gravityY;
@@ -107,7 +109,11 @@ public class ball {
         }
         //endscreen
         try {
-            Parent sgRoot= FXMLLoader.load(getClass().getResource("EndGamePage.fxml"));
+            //Parent sgRoot= FXMLLoader.load(getClass().getResource());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("EndGamePage.fxml"));
+            Parent sgRoot=loader.load();
+            EndGamePageController endgamecontroller=loader.getController();
+            endgamecontroller.setScore(currScore);
             Scene sgScene=new Scene(sgRoot);
             Stage window=new Stage();
             window.initModality(Modality.APPLICATION_MODAL);

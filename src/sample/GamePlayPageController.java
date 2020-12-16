@@ -4,6 +4,7 @@ import javafx.animation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -36,6 +37,7 @@ public class GamePlayPageController {
     public static ArrayList<colorSwitch> colorSwitches;
     BorderPane pausePane=new BorderPane();
     public static int currScore = 0;
+    Stage Window;
 
     Image BackButton = new Image(new FileInputStream("src/sample/Assets/back.png"));
     Image finger = new Image(new FileInputStream("src/sample/Assets/finger.png"));
@@ -45,6 +47,7 @@ public class GamePlayPageController {
     //Image BackButton = new Image(backbutton);
     @FXML
     public AnchorPane GamePlayRoot;
+    Scene mainScene;
 
     public GamePlayPageController() throws FileNotFoundException {
     }
@@ -64,15 +67,17 @@ public class GamePlayPageController {
         pause.setBackground(background);
         GamePlayRoot = new AnchorPane(pause,pausePane,Score);
 
-
+        //pass stage here
 
         Stage stage = new Stage();
         stage.setResizable(false);
         stage.setWidth(1280);
         stage.setHeight(720);
-        Scene mainScene = new Scene(GamePlayRoot);
+        mainScene = new Scene(GamePlayRoot);
         stage.setScene(mainScene);
-        stage.show();
+        //stage.show();
+        //Window.setScene(mainScene);
+//        Window.show();
         ball = new ball(GamePlayRoot, mainScene);
         createObstacles();
         GamePlayRoot.setBackground(new Background(new BackgroundFill(Paint.valueOf("#272727"),null,null)));
@@ -81,7 +86,12 @@ public class GamePlayPageController {
 
         pause.setOnAction(e -> {
             try {
-                Parent sgRoot= FXMLLoader.load(getClass().getResource("PausePage.fxml"));
+                //Parent sgRoot= FXMLLoader.load(getClass().getResource("PausePage.fxml"));
+                FXMLLoader loader= new FXMLLoader(getClass().getResource("PausePage.fxml"));
+                Parent sgRoot=loader.load();
+                PausePageController controlla=loader.getController();
+                Stage wwwindo= (Stage) pause.getScene().getWindow();//(Stage)((Node)event.getSource()).getScene().getWindow();
+                controlla.setWindow(wwwindo);
                 Scene sgScene=new Scene(sgRoot);
                 Stage window=new Stage();
                 window.initModality(Modality.APPLICATION_MODAL);
@@ -114,7 +124,17 @@ public class GamePlayPageController {
         obstacles.add(rect);
         obstacles.add(test);
     }
+    public void setWindow(Stage window)
+    {
+        Window=window;
+        Window.setWidth(1280);
+        Window.setHeight(720);
+        Window.setScene(mainScene);
+
+    }
+    public void restartGame()
+    {
 
 
-
+    }
 }
