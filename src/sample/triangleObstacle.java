@@ -10,13 +10,11 @@ import javafx.scene.transform.Rotate;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class triangleObstacle {
-    Group group = new Group();
-    double y;
-    double x = 680;
-    double rotateAngle = 0;
+public class triangleObstacle extends Obstacle {
+    AnimationTimer timer;
     triangleObstacle() {}
     triangleObstacle(AnchorPane GamePlayRoot) {
+        group = new Group();
         String[] colors = new String[4];
         colors[0] = "0x7f03f6ff";
         colors[1] = "0x0ac3d1ff";
@@ -36,7 +34,7 @@ public class triangleObstacle {
         group.getChildren().addAll(r1,r2,r3);
         group.setTranslateX(800);
         group.setTranslateY(100);
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 rotateAngle +=2;
@@ -61,5 +59,17 @@ public class triangleObstacle {
                 break;
             }
         }
+    }
+
+    public void move(double delta, AnchorPane GamePlayRoot) {
+        if(this.group.getParent() == GamePlayRoot) {
+            this.group.setTranslateY(group.getTranslateY() - delta);
+            if(group.getTranslateY() > 900) {
+                group.setTranslateY(100);
+            }
+        }
+    }
+    public void stopRotate() {
+        timer.stop();
     }
 }

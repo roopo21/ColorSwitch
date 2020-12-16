@@ -6,25 +6,29 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-public class rectangleObstacle {
-    Group group = new Group();
-    double y;
-    double x = 680;
-    double rotateAngle = 0;
+import java.io.FileNotFoundException;
+
+public class rectangleObstacle extends Obstacle {
+    AnimationTimer timer;
+    double rectWidth = 225;
+    double rectHeight = 15;
     rectangleObstacle() {}
-    rectangleObstacle(AnchorPane GamePlayRoot) {
-        Rectangle r1 = new Rectangle(200, 100, 225, 15);
+    rectangleObstacle(AnchorPane GamePlayRoot) throws FileNotFoundException {
+        x = 200;
+        y = 100;
+        group = new Group();
+        Rectangle r1 = new Rectangle(x, y, rectWidth, rectHeight);
         r1.setFill(Paint.valueOf("#7f03f6"));
-        Rectangle r2 = new Rectangle(412.5, 107.5, 15, 225);
+        Rectangle r2 = new Rectangle(x+y+(rectWidth/2), y + (rectHeight/2), rectHeight, rectWidth);
         r2.setFill(Paint.valueOf("#0ac3d1"));
-        Rectangle r3 = new Rectangle(200, 107.5, 15, 225);
+        Rectangle r3 = new Rectangle(x, y + (rectHeight/2), rectHeight, rectWidth);
         r3.setFill(Paint.valueOf("#f8126b"));
-        Rectangle r4 = new Rectangle(200, 325, 225, 15);
+        Rectangle r4 = new Rectangle(x, y+(rectWidth), rectWidth, rectHeight);
         r4.setFill(Paint.valueOf("#fbd327"));
         group.getChildren().addAll(r1,r2,r3,r4);
-        group.setTranslateX(800);
-        group.setTranslateY(300);
-        AnimationTimer timer = new AnimationTimer() {
+        group.setTranslateX(440 - (225/2));
+        group.setTranslateY(-100);
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 rotateAngle +=2;
@@ -32,6 +36,23 @@ public class rectangleObstacle {
             }
         };
         timer.start();
+        star = new Star(640,y+rectHeight*2,GamePlayRoot);
+        GamePlayRoot.getChildren().add(star.star);
+        GamePlayPageController.stars.add(star);
         GamePlayRoot.getChildren().add(group);
+
+    }
+    @Override
+    public void move(double delta, AnchorPane GamePlayRoot) {
+        if(this.group.getParent() == GamePlayRoot) {
+            this.group.setTranslateY(group.getTranslateY() - delta);
+            if(group.getTranslateY() > 900) {
+                group.setTranslateY(-100);
+            }
+        }
+    }
+
+    public void stopRotate() {
+        timer.stop();
     }
 }

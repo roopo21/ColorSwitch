@@ -10,14 +10,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class circleObstacle {
-    double y;
-    double x = 680;
-    double rotateAngle = 0;
+public class circleObstacle extends Obstacle {
+    ArrayList<Timeline> timelines = new ArrayList<Timeline>();
     circleObstacle() {}
-    circleObstacle(AnchorPane GamePlayRoot) {
+    circleObstacle(AnchorPane GamePlayRoot) throws FileNotFoundException {
+        group = new Group();
         ArrayList<Arc> allArcs = new ArrayList<Arc>();
         for(int i = 0;i <4; i++) {
             Arc test = new Arc();
@@ -43,20 +43,47 @@ public class circleObstacle {
                     break;
                 case 3:
                     test.setStartAngle(270);
-                    test.setStroke(Paint.valueOf("#fbd327"));
+                    test.setStroke(Paint.valueOf("0xfbd327ff"));
                     break;
             }
             test.setStrokeLineCap(StrokeLineCap.BUTT);
             test.setStrokeWidth(10.0);
             allArcs.add(test);
-            GamePlayRoot.getChildren().add(test);
+            group.getChildren().add(test);
+            star = new Star(640, 298, GamePlayRoot);
+            GamePlayRoot.getChildren().add(star.star);
+            GamePlayPageController.stars.add(star);
+            cs= new colorSwitch(640, 100, GamePlayRoot);
+            GamePlayRoot.getChildren().add(cs.cs);
+            GamePlayPageController.colorSwitches.add(cs);
         }
+        GamePlayRoot.getChildren().add(group);
         for(Arc arc: allArcs) {
             KeyValue x = new KeyValue(arc.startAngleProperty(), arc.getStartAngle(), Interpolator.LINEAR);
             KeyValue y = new KeyValue(arc.startAngleProperty(), arc.getStartAngle() - 360, Interpolator.LINEAR);
             Timeline time = new Timeline(new KeyFrame(Duration.ZERO, x),
                     new KeyFrame(Duration.seconds(2), y));
+            timelines.add(time);
             time.setCycleCount(Animation.INDEFINITE);
+            time.play();
+        }
+    }
+    public void stopRotate() {
+        for(Timeline time: timelines) {
+            time.pause();
+        }
+    }
+
+    public void move(double delta, AnchorPane GamePlayRoot) {
+        if(this.group.getParent() == GamePlayRoot) {
+            this.group.setTranslateY(group.getTranslateY() - delta);
+            if(group.getTranslateY() > 900) {
+                group.setTranslateY(-100);
+            }
+        }
+    }
+    public void resumeRotate() {
+        for(Timeline time: timelines) {
             time.play();
         }
     }
