@@ -3,11 +3,19 @@ package sample;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class ball {
     double y;
@@ -25,7 +33,7 @@ public class ball {
         ball.setRadius(13);
         ball.setCenterX(640);
         ball.setCenterY(550);
-        ball.setFill(Paint.valueOf("#fbd327"));
+        ball.setFill(Paint.valueOf("0xfbd327ff"));
         GamePlayRoot.getChildren().add(ball);
         start();
         gravity();
@@ -57,6 +65,14 @@ public class ball {
                 }
             });
 
+            if(ball.getCenterY() > 720) {
+                end();
+            }
+            if(ball.getCenterY() <= 359) {
+                moveObstacles();
+            }
+
+            collision();
         });
         tim.getKeyFrames().add(kf);
         tim.setCycleCount(Animation.INDEFINITE);
@@ -69,4 +85,53 @@ public class ball {
         }
         gravityY -= 10;
     }
+
+    public void end() {
+        tim.pause();
+        for(Obstacle obs1: GamePlayPageController.obstacles) {
+            obs1.stopRotate();
+        }
+        //endscreen
+    }
+
+    void collision() {
+        for(Obstacle obs: GamePlayPageController.obstacles) {
+            try {
+                if (ball.getBoundsInParent().intersects(obs.group.getBoundsInParent())) {
+                    ArrayList<Shape> shapes = new ArrayList<Shape>();
+                    for(Node s: obs.group.getChildren()) {
+                        shapes.add((Shape)s);
+                    }
+                    for(Shape s: shapes) {
+                        Shape intersectOrNot = Shape.intersect(ball,s);
+                        if(intersectOrNot.getBoundsInLocal().getWidth() != -1) {
+                            //obs.group.getChildren().remove(s);
+
+                            if(((Arc)s).getFill().equals(ball.getFill())) {
+                                System.out.println(s.getFill());
+                                System.out.println(ball.getFill());
+                                end();
+                            }
+                        }
+                    }
+                }
+            } catch(Exception NullPointerException) { }
+        }
+    }
+    void moveObstacles() {
+        double delta = ball.getCenterY() - 360;
+        ball.setCenterY(360);
+        for(int i = 0; i<GamePlayPageController.obstacles.size(); i++) {
+            Obstacle obs = GamePlayPageController.obstacles.get(i);
+            obs.move(delta, GamePlayRoot);
+        }
+        for(Star star: GamePlayPageController.stars) {
+            star.move(delta, GamePlayRoot);
+        }
+        for(colorSwitch cs: GamePlayPageController.colorSwitches) {
+            cs.move(delta, GamePlayRoot);
+        }
+
+    }
+
 }

@@ -8,13 +8,11 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
-public class plusObstacle {
-    Group group = new Group();
-    double y;
-    double x = 680;
-    double rotateAngle = 0;
+public class plusObstacle extends Obstacle {
+    AnimationTimer timer;
     plusObstacle() {}
     plusObstacle(AnchorPane GamePlayRoot) {
+        group = new Group();
         Rectangle r1 = new Rectangle(107.5, 100, 100, 15);
         r1.setFill(Paint.valueOf("#7f03f6"));
         Rectangle r2 = new Rectangle(200, 107.5, 15, 100);
@@ -26,7 +24,7 @@ public class plusObstacle {
         group.getChildren().addAll(r1,r2,r3,r4);
         group.setTranslateX( 100);
         group.setTranslateY(100);
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 rotateAngle +=2;
@@ -35,5 +33,16 @@ public class plusObstacle {
         };
         timer.start();
         GamePlayRoot.getChildren().add(group);
+    }
+    public void move(double delta, AnchorPane GamePlayRoot) {
+        if(this.group.getParent() == GamePlayRoot) {
+            this.group.setTranslateY(group.getTranslateY() - delta);
+            if(group.getTranslateY() > 900) {
+                group.setTranslateY(-100);
+            }
+        }
+    }
+    public void stopRotate() {
+        timer.stop();
     }
 }

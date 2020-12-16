@@ -23,8 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
-
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,19 +31,19 @@ import java.util.ArrayList;
 public class GamePlayPageController {
     public static ball ball;
     Button pause;
-
-
-
-
-
+    public static ArrayList<Obstacle> obstacles;
+    public static ArrayList<Star> stars;
+    public static ArrayList<colorSwitch> colorSwitches;
     BorderPane pausePane=new BorderPane();
+    public static int currScore = 0;
 
     Image BackButton = new Image(new FileInputStream("src/sample/Assets/back.png"));
     Image finger = new Image(new FileInputStream("src/sample/Assets/finger.png"));
     Image plusOne = new Image(new FileInputStream("src/sample/Assets/+1.png"));
     Image PauseImage = new Image(new FileInputStream("src/sample/Assets/flatLight12.png"));
-
-
+    //FileInputStream backbutton = new FileInputStream("src/sample/Assets/back.jpg");
+    //Image BackButton = new Image(backbutton);
+    @FXML
     public AnchorPane GamePlayRoot;
 
     public GamePlayPageController() throws FileNotFoundException {
@@ -53,9 +51,8 @@ public class GamePlayPageController {
 
     @FXML
     private void initialize() throws FileNotFoundException {
-
         pause = new Button();
-        Label Score=new Label("Score -"+0);
+        Label Score=new Label("Score -"+ currScore);
         Score.setFont(new Font("Arial",24));
 
         pause.setPrefSize(80, 80);
@@ -76,13 +73,11 @@ public class GamePlayPageController {
         Scene mainScene = new Scene(GamePlayRoot);
         stage.setScene(mainScene);
         stage.show();
-        circleObstacle circle = new circleObstacle(GamePlayRoot);
         ball = new ball(GamePlayRoot, mainScene);
+        createObstacles();
         GamePlayRoot.setBackground(new Background(new BackgroundFill(Paint.valueOf("#272727"),null,null)));
-        triangleObstacle tri = new triangleObstacle(GamePlayRoot);
-        doublePlusObstacle doub = new doublePlusObstacle(GamePlayRoot);
-        rectangleObstacle rect = new rectangleObstacle(GamePlayRoot);
         //pause.setGraphic(new ImageView(BackButton));
+        //ball.collision();
 
         pause.setOnAction(e -> {
             try {
@@ -99,9 +94,27 @@ public class GamePlayPageController {
 
 
         });
-        plusObstacle test = new plusObstacle(GamePlayRoot);
+
 
         //GamePlayRoot.getChildren().add(ball);
     }
+
+    void createObstacles() throws FileNotFoundException { //CHANGES TO BE MADE
+        obstacles = new ArrayList<Obstacle>();
+        stars = new ArrayList<Star>();
+        colorSwitches = new ArrayList<colorSwitch>();
+        circleObstacle circle = new circleObstacle(GamePlayRoot);
+        triangleObstacle tri = new triangleObstacle(GamePlayRoot);
+        doublePlusObstacle doub = new doublePlusObstacle(GamePlayRoot);
+        rectangleObstacle rect = new rectangleObstacle(GamePlayRoot);
+        plusObstacle test = new plusObstacle(GamePlayRoot);
+        obstacles.add(circle);
+        obstacles.add(tri);
+        obstacles.add(doub);
+        obstacles.add(rect);
+        obstacles.add(test);
+    }
+
+
 
 }

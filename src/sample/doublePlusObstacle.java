@@ -6,13 +6,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-public class doublePlusObstacle {
+public class doublePlusObstacle extends Obstacle{
     Group group1 = new Group();
     Group group2 = new Group();
-    double y;
-    double x = 680;
-    double rotateAngle1 = 0;
-    double rotateAngle2 = 0;
+    double rotateAngle2 = -rotateAngle;
+    AnimationTimer timer;
     doublePlusObstacle() {}
     doublePlusObstacle(AnchorPane GamePlayRoot) {
         Rectangle r1 = new Rectangle(125, 100, 75, 15);
@@ -41,11 +39,11 @@ public class doublePlusObstacle {
         group2.setTranslateX( 150);
         group2.setTranslateY(300);
 
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                rotateAngle1 +=1.5;
-                group1.setRotate(rotateAngle1%360);
+                rotateAngle +=1.5;
+                group1.setRotate(rotateAngle%360);
                 rotateAngle2 -=1.5;
                 group2.setRotate(rotateAngle2%360);
             }
@@ -53,5 +51,21 @@ public class doublePlusObstacle {
         timer.start();
         GamePlayRoot.getChildren().add(group1);
         GamePlayRoot.getChildren().add(group2);
+    }
+
+    public void move(double delta, AnchorPane GamePlayRoot) {
+        if(this.group1.getParent() == GamePlayRoot) {
+            this.group1.setTranslateY(group1.getTranslateY() - delta);
+            if(group1.getTranslateY() > 900) {
+                group1.setTranslateY(-100);
+            }
+            this.group2.setTranslateY(group2.getTranslateY() - delta);
+            if(group2.getTranslateY() > 900) {
+                group2.setTranslateY(-100);
+            }
+        }
+    }
+    public void stopRotate() {
+        timer.stop();
     }
 }
