@@ -38,15 +38,12 @@ public class MainPageController implements Initializable {
     //circleObstacle mainPageCircle=new circleObstacle(circlePane);
 
     public void changeScreenNewGame(ActionEvent event) throws IOException {
-        //Parent sgRoot= FXMLLoader.load(getClass().getResource("GamePlayPage.fxml"));
-        FXMLLoader loader= new FXMLLoader(getClass().getResource("GamePlayPage.fxml"));
-        //Parent sgRoot=loader.load();
-        //Scene sgScene=new Scene(sgRoot);
-
+        Parent sgRoot= FXMLLoader.load(getClass().getResource("GamePlayPage.fxml"));
+        Scene sgScene=new Scene(sgRoot);
+        //This line will get the stage information
         Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
-        GamePlayPageController controlla=loader.getController();
-        controlla.setWindow(window);
-
+        window.setScene(sgScene);
+        window.close();
     }
 
 
