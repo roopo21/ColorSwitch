@@ -8,14 +8,21 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static sample.GamePlayPageController.currScore;
 
 public class ball {
     double y;
@@ -26,7 +33,9 @@ public class ball {
     Timeline tim = new Timeline();
     Scene mainScene;
 
-    ball(AnchorPane GamePlayRoot, Scene mainScene) {
+
+
+    ball(AnchorPane GamePlayRoot, Scene mainScene) throws FileNotFoundException {
         this.GamePlayRoot = GamePlayRoot;
         this.mainScene = mainScene;
         ball = new Circle();
@@ -37,6 +46,12 @@ public class ball {
         GamePlayRoot.getChildren().add(ball);
         start();
         gravity();
+    }
+
+    private void clip()
+    {   File soundeffect=new File("src/sample/Assets/Swooshsoundeffect1.mp3");
+        AudioClip clip=new AudioClip(soundeffect.toURI().toString());
+        clip.play(80);
     }
 
     void start() {
@@ -61,6 +76,7 @@ public class ball {
             mainScene.setOnKeyReleased(k -> {
                 String code = k.getCode().toString();
                 if(code=="UP") {
+                    clip();
                     jump();
                 }
             });
@@ -92,6 +108,21 @@ public class ball {
             obs1.stopRotate();
         }
         //endscreen
+        try {
+            //Parent sgRoot= FXMLLoader.load(getClass().getResource());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("EndGamePage.fxml"));
+            Parent sgRoot=loader.load();
+            EndGamePageController endgamecontroller=loader.getController();
+            endgamecontroller.setScore(currScore);
+            Scene sgScene=new Scene(sgRoot);
+            Stage window=new Stage();
+            window.initModality(Modality.APPLICATION_MODAL);
+            window.setScene(sgScene);
+            window.show();
+
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
     }
 
     void collision() {
