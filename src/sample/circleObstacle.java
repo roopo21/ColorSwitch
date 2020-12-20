@@ -16,7 +16,11 @@ import java.util.ArrayList;
 public class circleObstacle extends Obstacle {
     ArrayList<Timeline> timelines = new ArrayList<Timeline>();
     circleObstacle() {}
-    circleObstacle(AnchorPane GamePlayRoot) throws FileNotFoundException {
+    circleObstacle(AnchorPane GamePlayRoot, AnchorPane invisiRoot) {
+        rotateAngleModifier = 2;
+        onScreen = false;
+        this.GamePlayRoot = GamePlayRoot;
+        this.invisiRoot = invisiRoot;
         group = new Group();
         ArrayList<Arc> allArcs = new ArrayList<Arc>();
         for(int i = 0;i <4; i++) {
@@ -50,19 +54,15 @@ public class circleObstacle extends Obstacle {
             test.setStrokeWidth(10.0);
             allArcs.add(test);
             group.getChildren().add(test);
-            star = new Star(640, 298, GamePlayRoot);
-            GamePlayRoot.getChildren().add(star.star);
-            GamePlayPageController.stars.add(star);
-            cs= new colorSwitch(640, 100, GamePlayRoot);
-            GamePlayRoot.getChildren().add(cs.cs);
-            GamePlayPageController.colorSwitches.add(cs);
         }
-        GamePlayRoot.getChildren().add(group);
+        group.setTranslateY(-400);
+        //spawnStarAndCS();
+        invisiRoot.getChildren().add(group);
         for(Arc arc: allArcs) {
             KeyValue x = new KeyValue(arc.startAngleProperty(), arc.getStartAngle(), Interpolator.LINEAR);
             KeyValue y = new KeyValue(arc.startAngleProperty(), arc.getStartAngle() - 360, Interpolator.LINEAR);
             Timeline time = new Timeline(new KeyFrame(Duration.ZERO, x),
-                    new KeyFrame(Duration.seconds(2), y));
+                    new KeyFrame(Duration.seconds(rotateAngleModifier), y));
             timelines.add(time);
             time.setCycleCount(Animation.INDEFINITE);
             time.play();
@@ -74,11 +74,12 @@ public class circleObstacle extends Obstacle {
         }
     }
 
-    public void move(double delta, AnchorPane GamePlayRoot) {
+    public void move(double delta, AnchorPane GamePlayRoot) throws FileNotFoundException {
         if(this.group.getParent() == GamePlayRoot) {
             this.group.setTranslateY(group.getTranslateY() - delta);
-            if(group.getTranslateY() > 900) {
-                group.setTranslateY(-100);
+            if(group.getTranslateY() > 820) {
+                this.disappear();
+                group.setTranslateY(-400);
             }
         }
     }
@@ -86,5 +87,20 @@ public class circleObstacle extends Obstacle {
         for(Timeline time: timelines) {
             time.play();
         }
+    }
+
+    @Override
+    public void spawnStarAndCS() throws FileNotFoundException {
+        star = new Star(640, group.getTranslateY()+300, GamePlayRoot, invisiRoot);
+        GamePlayRoot.getChildren().add(star.star);
+        GamePlayPageController.stars.add(star);
+        cs= new colorSwitch(640, group.getTranslateY()+60, GamePlayRoot, invisiRoot);
+        GamePlayRoot.getChildren().add(cs.cs);
+        GamePlayPageController.colorSwitches.add(cs);
+    }
+    @Override
+    public void changeSpeed() {
+        if (rotateAngleModifier >= 1.6)
+            this.rotateAngleModifier -= 0.2;
     }
 }

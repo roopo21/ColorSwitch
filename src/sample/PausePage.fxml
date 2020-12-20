@@ -18,7 +18,7 @@
                 <Font name="Ebrima Bold" size="17.0" />
             </font>
         </Button>
-        <Button fx:id="savegame" layoutX="124.0" layoutY="284.0" mnemonicParsing="false" onAction="#changeSaveGame" prefHeight="50.0" prefWidth="50.0" text="Button">
+        <Button fx:id="savegame" layoutX="124.0" layoutY="284.0" mnemonicParsing="false" onAction="#saveGame" prefHeight="50.0" prefWidth="50.0" text="Button">
             <effect>
                 <ImageInput>
                     <source>
@@ -29,7 +29,7 @@
 
             </effect>
         </Button>
-        <Button fx:id="closebutton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#changeScreenRemovesettings" prefHeight="50.0" prefWidth="50.0" text="Button">
+        <Button fx:id="closebutton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#changeScreenResume" prefHeight="50.0" prefWidth="50.0" text="Button">
             <effect>
                 <ImageInput>
                     <source>

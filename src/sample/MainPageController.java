@@ -35,17 +35,20 @@ public class MainPageController implements Initializable {
     @FXML
     private BorderPane settingsPane;
     private AnchorPane circlePane;
-    //circleObstacle mainPageCircle=new circleObstacle(circlePane);
+
+    public static Stage MainWindow;
 
     public void changeScreenNewGame(ActionEvent event) throws IOException {
-        //Parent sgRoot= FXMLLoader.load(getClass().getResource("GamePlayPage.fxml"));
-        FXMLLoader loader= new FXMLLoader(getClass().getResource("GamePlayPage.fxml"));
-        //Parent sgRoot=loader.load();
-        //Scene sgScene=new Scene(sgRoot);
 
+
+        FXMLLoader loader= new FXMLLoader(getClass().getResource("GamePlayPage.fxml"));
+        Parent sgRoot=loader.load();
+        Scene sgScene=new Scene(sgRoot);
         Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
+
         GamePlayPageController controlla=loader.getController();
         controlla.setWindow(window);
+        MainWindow=window;
 
     }
 
@@ -53,45 +56,38 @@ public class MainPageController implements Initializable {
     public void changeScreenSavedGame(ActionEvent event) throws IOException {
     Parent sgRoot= FXMLLoader.load(getClass().getResource("SavedPage.fxml"));
     Scene sgScene=new Scene(sgRoot);
-    //This line will get the stage information
+
     Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
     window.setScene(sgScene);
     window.show();
+        MainWindow=window;
 }
 
     public void changeScreenLeaderboard(ActionEvent event) throws IOException {
         Parent sgRoot= FXMLLoader.load(getClass().getResource("LeaderboardPage.fxml"));
         Scene sgScene=new Scene(sgRoot);
-        //This line will get the stage information
         Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(sgScene);
         window.show();
+        MainWindow=window;
     }
 
     public void changeScreenExit(ActionEvent event) throws IOException {
-        //Parent sgRoot= FXMLLoader.load(getClass().getResource("SavedPage.fxml"));
-       // Scene sgScene=new Scene(sgRoot);
-        //This line will get the stage information
+
         Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
-        //window.setScene(sgScene);
+
         window.close();
-        //window.show();
+        MainWindow=window;
+
     }
 
     public void changeScreenSettings(ActionEvent event) throws IOException {
-        //Parent sgRoot= FXMLLoader.load(getClass().getResource("SavedPage.fxml"));
-        // Scene sgScene=new Scene(sgRoot);
-        //This line will get the stage information
-        //Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
-        //window.setScene(sgScene);
-        //window.close();
-        //window.show();
-        //System.out.println("done");
+
         Stage window= (Stage)((Node)event.getSource()).getScene().getWindow();
         Pane view=FXMLLoader.load(getClass().getResource("SettingsPage.fxml"));
-        //Scene sgScene=new Scene(view);
-        //window.setScene(sgScene);
+
         settingsPane.setCenter(view);
+        MainWindow=window;
     }
 
 
@@ -99,7 +95,17 @@ public class MainPageController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //circleObstacle mainPageCircle=new circleObstacle(circlePane);
+
 
     }
+
+    public void changeScreenRestartgame(ActionEvent event,Stage window) throws IOException {
+        FXMLLoader loader= new FXMLLoader(getClass().getResource("GamePlayPage.fxml"));
+        Parent sgRoot=loader.load();
+        Scene sgScene=new Scene(sgRoot);
+        GamePlayPageController controlla=loader.getController();
+        controlla.setWindow(window);
+    }
+
+
 }

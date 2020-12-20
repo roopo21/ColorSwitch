@@ -10,9 +10,12 @@ import javafx.scene.paint.ImagePattern;
 
 public class Star extends GameElements {
     Circle star;
+    Boolean added;
     Star() { }
-    Star(double x, double y, AnchorPane myRoot) throws FileNotFoundException {
-        this.myRoot = myRoot;
+    Star(double x, double y, AnchorPane myRoot, AnchorPane invisiRoot) throws FileNotFoundException {
+        added = false;
+        this.GamePlayRoot = myRoot;
+        this.invisiRoot = invisiRoot;
         this.y = y; this.x = x;
         Image img = new Image(new FileInputStream("src/sample/Assets/star.gif"));
         ImagePattern ip = new ImagePattern(img);
@@ -22,13 +25,20 @@ public class Star extends GameElements {
         star.setCenterX(x);
         star.setCenterY(y);
     }
-
-    public void disappear(AnchorPane goHere, AnchorPane fromHere) {
-        fromHere.getChildren().remove(this.star);
-        goHere.getChildren().add(this.star);
+    @Override
+    public void disappear() {
+        //GamePlayPageController.currScore++;
+        if(GamePlayPageController.currScore%5 == 0 && GamePlayPageController.currScore > 0) {
+            for(Obstacle obs: GamePlayPageController.obstacles) {
+                obs.changeSpeed();
+            }
+        }
+        added = true;
+        GamePlayRoot.getChildren().remove(this.star);
+        invisiRoot.getChildren().add(this.star);
     }
     public void move(double delta, AnchorPane GamePlayRoot) {
-        if(this.myRoot == GamePlayRoot) {
+        if(this.star.getParent() == GamePlayRoot) {
             this.star.setCenterY(star.getCenterY() - delta);
         }
     }

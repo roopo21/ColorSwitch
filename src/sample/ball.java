@@ -1,5 +1,11 @@
 package sample;
+import javafx.scene.image.ImageView;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,21 +14,15 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.media.AudioClip;
-import javafx.scene.media.Media;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static sample.GamePlayPageController.currScore;
 
 public class ball {
     double y;
@@ -32,12 +32,16 @@ public class ball {
     int ticks;
     Timeline tim = new Timeline();
     Scene mainScene;
-
-
-
-    ball(AnchorPane GamePlayRoot, Scene mainScene) throws FileNotFoundException {
+    Stage bigStage;
+    //public static int score=0;
+    GamePlayPageController gamePlay;
+    ImageView finger;
+    ball(AnchorPane GamePlayRoot, Scene mainScene,GamePlayPageController gamePlay,ImageView fing) throws FileNotFoundException {
         this.GamePlayRoot = GamePlayRoot;
         this.mainScene = mainScene;
+        this.finger=fing;
+
+        this.gamePlay=gamePlay;
         ball = new Circle();
         ball.setRadius(13);
         ball.setCenterX(640);
@@ -46,25 +50,47 @@ public class ball {
         GamePlayRoot.getChildren().add(ball);
         start();
         gravity();
+
     }
 
     private void clip()
-    {   File soundeffect=new File("src/sample/Assets/Swooshsoundeffect1.mp3");
+    {
+        File soundeffect=new File("src/sample/Assets/Swooshsoundeffect1.mp3");
         AudioClip clip=new AudioClip(soundeffect.toURI().toString());
         clip.play(80);
     }
+    private void gameoverclip()
+    {
+        File soundeffect=new File("src/sample/Assets/gameover.mp3");
+        AudioClip clip=new AudioClip(soundeffect.toURI().toString());
+        clip.play(1);
+    }
+    private void colorswitchclip()
+    {
+        File soundeffect=new File("src/sample/Assets/colorswitchclip.mp3");
+        AudioClip clip=new AudioClip(soundeffect.toURI().toString());
+        clip.play(1);
+    }
+    private void starclip()
+    {
+        File soundeffect=new File("src/sample/Assets/starcollected.mp3");
 
+        AudioClip clip=new AudioClip(soundeffect.toURI().toString());
+        clip.play(1);
+    }
     void start() {
         tim.pause();
         mainScene.setOnKeyReleased(k -> {
             String code = k.getCode().toString();
             if(code == "UP") {
                 tim.play();
+                //finger=null;
             }
+            finger.setVisible(false);
         });
     }
 
-    void gravity() {
+    void gravity() throws FileNotFoundException {
         KeyFrame kf=new KeyFrame(Duration.millis(20), e -> {
             ticks++;
             if(ticks%3==0&&gravityY<7) {
@@ -85,7 +111,10 @@ public class ball {
                 end();
             }
             if(ball.getCenterY() <= 359) {
-                moveObstacles();
+                try {
+                    moveObstacles();
+                }
+                catch(Exception FileNotFoundException ) { }
             }
 
             collision();
@@ -103,54 +132,60 @@ public class ball {
     }
 
     public void end() {
-        tim.pause();
-        for(Obstacle obs1: GamePlayPageController.obstacles) {
-            obs1.stopRotate();
-        }
-        //endscreen
+        pause();
+        gameoverclip();
+
         try {
-            //Parent sgRoot= FXMLLoader.load(getClass().getResource());
             FXMLLoader loader = new FXMLLoader(getClass().getResource("EndGamePage.fxml"));
             Parent sgRoot=loader.load();
             EndGamePageController endgamecontroller=loader.getController();
-            endgamecontroller.setScore(currScore);
+            endgamecontroller.setScore();
             Scene sgScene=new Scene(sgRoot);
             Stage window=new Stage();
             window.initModality(Modality.APPLICATION_MODAL);
             window.setScene(sgScene);
             window.show();
-
         } catch (IOException ioException) {
             ioException.printStackTrace();
+        }
+    }
+    public void pause() {
+        tim.pause();
+        for(Obstacle obs1: GamePlayPageController.obstacles) {
+            obs1.stopRotate();
+        }
+    }
+
+    public void resume() throws FileNotFoundException {
+
+        tim.play();
+       //gravity();
+        for(Obstacle obs1: GamePlayPageController.obstacles) {
+            obs1.resumeRotate();
         }
     }
 
     void collision() {
         for(Obstacle obs: GamePlayPageController.obstacles) {
-            try {
-                if (ball.getBoundsInParent().intersects(obs.group.getBoundsInParent())) {
-                    ArrayList<Shape> shapes = new ArrayList<Shape>();
-                    for(Node s: obs.group.getChildren()) {
-                        shapes.add((Shape)s);
-                    }
-                    for(Shape s: shapes) {
-                        Shape intersectOrNot = Shape.intersect(ball,s);
-                        if(intersectOrNot.getBoundsInLocal().getWidth() != -1) {
-                            //obs.group.getChildren().remove(s);
-
-                            if(((Arc)s).getFill().equals(ball.getFill())) {
-                                System.out.println(s.getFill());
-                                System.out.println(ball.getFill());
-                                end();
-                            }
-                        }
-                    }
-                }
-            } catch(Exception NullPointerException) { }
+            obs.collide(this);
+        }
+        for(Star s: GamePlayPageController.stars) {
+            if(ball.getBoundsInParent().intersects(s.star.getBoundsInParent()) && !s.added) {
+                starclip();
+                GamePlayPageController.addPoint();
+                s.disappear();
+            }
+        }
+        for(colorSwitch cs: GamePlayPageController.colorSwitches) {
+            if(ball.getBoundsInParent().intersects(cs.cs.getBoundsInParent()) && !cs.used) {
+                cs.disappear();
+                colorswitchclip();
+            }
         }
     }
-    void moveObstacles() {
+    void moveObstacles() throws FileNotFoundException {
         double delta = ball.getCenterY() - 360;
+       // finger.setVisible(false);
         ball.setCenterY(360);
         for(int i = 0; i<GamePlayPageController.obstacles.size(); i++) {
             Obstacle obs = GamePlayPageController.obstacles.get(i);
@@ -164,5 +199,12 @@ public class ball {
         }
 
     }
+    void resetPosition() {
+        ball.setCenterY(550);
 
+    }
+
+    public void setWindow(Stage passtoball) {
+
+    }
 }
